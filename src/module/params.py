@@ -7,20 +7,7 @@ PARAMS = {
     "PASSWORD": getenv("PASSWORD", ""),
     "DB_PATH": getenv("DB_PATH", ""),
     "TABLE_NAME": getenv("TABLE_NAME", ""),
-    "COLUMNS": getenv("COLUMNS", ""),
-    "LABELS": getenv("LABELS", ""),
-    "DATE_COLUMN": getenv("DATE_COLUMN", "")
+    "COLUMNS": [column.strip() for column in getenv("COLUMNS").split(',')],
+    "LABELS": [label.strip() for label in getenv("LABELS").split(',')],
+    "DATE_COLUMN": getenv("DATE_COLUMN", "").strip()
 }
-
-PARAMS['DATE_COLUMN'] = PARAMS['DATE_COLUMN'].strip()
-
-# parse columns and labels
-if PARAMS['COLUMNS']:
-    PARAMS['COLUMNS'] = [header.strip() for header in PARAMS['COLUMNS'].split(',')]
-else:
-    PARAMS['COLUMNS'] = None
-
-if PARAMS['LABELS']:
-    PARAMS['LABELS'] = [label.strip() for label in PARAMS['LABELS'].split(',')]
-else:
-    PARAMS['LABELS'] = None

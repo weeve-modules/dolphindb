@@ -15,10 +15,7 @@ log = getLogger("module")
 
 # Connect to DolphinDB servers
 s = ddb.session()
-if PARAMS['USERNAME'] and PARAMS['PASSWORD']:
-    s.connect(PARAMS['HOST'], PARAMS['PORT'], PARAMS['USERNAME'], PARAMS['PASSWORD'])
-else:
-    s.connect(PARAMS['HOST'], PARAMS['PORT'])
+s.connect(PARAMS['HOST'], PARAMS['PORT'], PARAMS['USERNAME'], PARAMS['PASSWORD'])
 
 # Prepare some helpful local variables for writing data to DB
 s.run('tb = loadTable("{a}","{b}")'.format(a=PARAMS['DB_PATH'],b=PARAMS['TABLE_NAME']))
@@ -42,16 +39,10 @@ def module_main(received_data: any) -> str:
         construct_dict = {}
         for i in range(len(PARAMS['COLUMNS'])):
             if type(received_data) == dict:
-                if PARAMS['COLUMNS'][i] == PARAMS['DATE_COLUMN']:
-                    # cast timestamp to datetime64[D]
-                    construct_dict[PARAMS['COLUMNS'][i]] = np.array([received_data[PARAMS['LABELS'][i]]], dtype="datetime64[D]")
-                else:
-                    construct_dict[PARAMS['COLUMNS'][i]] = [received_data[PARAMS['LABELS'][i]]]
+                # cast timestamp to datetime64[D]
+                construct_dict[PARAMS['COLUMNS'][i]] = np.array([received_data[PARAMS['LABELS'][i]]], dtype="datetime64[D]") if PARAMS['COLUMNS'][i] == PARAMS['DATE_COLUMN'] else [received_data[PARAMS['LABELS'][i]]]
             else:
-                if PARAMS['COLUMNS'][i] == PARAMS['DATE_COLUMN']:
-                    construct_dict[PARAMS['COLUMNS'][i]] = np.array([d[PARAMS['LABELS'][i]] for d in received_data], dtype="datetime64[D]")
-                else:
-                    construct_dict[PARAMS['COLUMNS'][i]] = [d[PARAMS['LABELS'][i]] for d in received_data]
+                construct_dict[PARAMS['COLUMNS'][i]] = np.array([d[PARAMS['LABELS'][i]] for d in received_data], dtype="datetime64[D]") if PARAMS['COLUMNS'][i] == PARAMS['DATE_COLUMN'] else [d[PARAMS['LABELS'][i]] for d in received_data]
         df = pd.DataFrame(construct_dict)
 
         log.debug("Writing data...")
