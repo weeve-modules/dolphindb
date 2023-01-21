@@ -5,6 +5,7 @@ Data outputting should happen here.
 Edit this file to implement your module.
 """
 
+import sys
 import dolphindb as ddb
 import numpy as np
 import pandas as pd
@@ -15,7 +16,9 @@ log = getLogger("module")
 
 # Connect to DolphinDB servers
 s = ddb.session()
-s.connect(PARAMS['HOST'], PARAMS['PORT'], PARAMS['USERNAME'], PARAMS['PASSWORD'])
+connected = s.connect(PARAMS['HOST'], PARAMS['PORT'], PARAMS['USERNAME'], PARAMS['PASSWORD'])
+if not connected:
+    sys.exit(f"Connection Error: couldn't connect to DolphinDB. Please check host, port, username and password provided in weeve IoT Platform module configuration pane.")
 
 # Prepare some helpful local variables for writing data to DB
 s.run('tb = loadTable("{a}","{b}")'.format(a=PARAMS['DB_PATH'],b=PARAMS['TABLE_NAME']))
